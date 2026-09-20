@@ -1,0 +1,46 @@
+[
+  {
+    "files": 100,
+    "dirs": 14,
+    "gen_s": 0.007,
+    "label": "TIER_1_SMALL",
+    "depth": 3,
+    "scan_s": 0.054,
+    "files_found": 100,
+    "dirs_found": 13,
+    "result_type": "ScanResult"
+  },
+  {
+    "files": 1000,
+    "dirs": 56,
+    "gen_s": 0.052,
+    "label": "TIER_2_MEDIUM",
+    "depth": 5,
+    "scan_s": 0.33,
+    "files_found": 1000,
+    "dirs_found": 55,
+    "result_type": "ScanResult"
+  },
+  {
+    "files": 5000,
+    "dirs": 208,
+    "gen_s": 0.245,
+    "label": "TIER_3_LARGE",
+    "depth": 7,
+    "scan_s": 1.72,
+    "files_found": 5000,
+    "dirs_found": 207,
+    "result_type": "ScanResult"
+  },
+  {
+    "files": 20000,
+    "dirs": 511,
+    "gen_s": 1.004,
+    "label": "TIER_4_EXTREME",
+    "depth": 10,
+    "scan_s": 6.282,
+    "files_found": 20000,
+    "dirs_found": 510,
+    "result_type": "ScanResult"
+  }
+]

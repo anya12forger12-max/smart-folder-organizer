@@ -1,0 +1,63 @@
+{
+  "version": "0.9.0",
+  "revision": "uncommitted-working-tree",
+  "result": "RELEASE APPROVED",
+  "gates": [
+    {
+      "gate": "version_consistency",
+      "status": "PASS",
+      "detail": "version 0.9.0 consistent (dynamic attr)",
+      "seconds": 0.0
+    },
+    {
+      "gate": "source_clean",
+      "status": "PASS",
+      "detail": "no commits exist; uncommitted-tree baseline",
+      "seconds": 0.0
+    },
+    {
+      "gate": "no_secrets",
+      "status": "PASS",
+      "detail": "no secrets detected in src/",
+      "seconds": 0.03
+    },
+    {
+      "gate": "no_network_imports",
+      "status": "PASS",
+      "detail": "zero network imports in src/",
+      "seconds": 0.12
+    },
+    {
+      "gate": "test_suite",
+      "status": "PASS",
+      "detail": "106 tests passed, no failures",
+      "seconds": 3.5
+    },
+    {
+      "gate": "security_suite",
+      "status": "PASS",
+      "detail": "security suite OK",
+      "seconds": 1.91
+    },
+    {
+      "gate": "recovery_drills",
+      "status": "PASS",
+      "detail": "recovery drills passed",
+      "seconds": 1.98
+    },
+    {
+      "gate": "build",
+      "status": "PASS",
+      "detail": "wheel=smart_folder_organizer-0.9.0-py3-none-any.whl, sdist=smart_folder_organizer-0.9.0.tar.gz",
+      "seconds": 9.14
+    },
+    {
+      "gate": "wheel_install",
+      "status": "PASS",
+      "detail": "installed v0.9.0, CLI functional",
+      "seconds": 5.66
+    }
+  ],
+  "warnings": [],
+  "emergency": false
+}

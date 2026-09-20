@@ -1,0 +1,15 @@
+{
+  "duration_s": 7.48,
+  "cycles": 50,
+  "scan_times": {
+    "min": 0.08,
+    "max": 0.233,
+    "avg": 0.149
+  },
+  "timing_trend": "STABLE",
+  "errors": 0,
+  "data_integrity": "PASS",
+  "rss_start_mb": 22.0,
+  "rss_end_mb": 23.5,
+  "memory_trend": "STABLE"
+}

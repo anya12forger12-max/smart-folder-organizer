@@ -1,0 +1,70 @@
+{
+  "startup": {
+    "runs": 5,
+    "min_s": 0.1015,
+    "max_s": 0.2007,
+    "avg_s": 0.1515,
+    "rss_delta_mb": 0.1
+  },
+  "scan": {
+    "100": {
+      "files": 100,
+      "runs": 3,
+      "min_s": 0.046,
+      "max_s": 0.058,
+      "avg_s": 0.052,
+      "per_file_ms": 0.52,
+      "rss_delta_mb": 0.5,
+      "files_per_sec": 1911
+    },
+    "1000": {
+      "files": 1000,
+      "runs": 3,
+      "min_s": 0.254,
+      "max_s": 0.342,
+      "avg_s": 0.3,
+      "per_file_ms": 0.3,
+      "rss_delta_mb": 4.6,
+      "files_per_sec": 3337
+    },
+    "5000": {
+      "files": 5000,
+      "runs": 3,
+      "min_s": 1.173,
+      "max_s": 1.403,
+      "avg_s": 1.271,
+      "per_file_ms": 0.25,
+      "rss_delta_mb": 9.5,
+      "files_per_sec": 3933
+    },
+    "20000": {
+      "files": 20000,
+      "runs": 3,
+      "min_s": 5.093,
+      "max_s": 6.249,
+      "avg_s": 5.764,
+      "per_file_ms": 0.29,
+      "rss_delta_mb": 38.5,
+      "files_per_sec": 3470
+    }
+  },
+  "search": {
+    "files": 5000,
+    "runs": 5,
+    "avg_s": 1.357
+  },
+  "database": {
+    "ops": "create+insert(1000)+query+close",
+    "runs": 10,
+    "min_s": 0.0017,
+    "max_s": 0.0044,
+    "avg_s": 0.0023
+  },
+  "memory": {
+    "start_mb": 55.6,
+    "end_mb": 68.7,
+    "delta_mb": 13.1,
+    "files_scanned": 100000,
+    "verdict": "DRIFT"
+  }
+}
