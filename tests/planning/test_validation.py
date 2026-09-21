@@ -30,8 +30,9 @@ def _identity(path: Path) -> FileIdentity:
     return FileIdentity.from_stat(os.lstat(path))
 
 
-def _move(action_id, source: Path, destination: Path,
-          identity: FileIdentity | None = None) -> PlannedMove:
+def _move(
+    action_id, source: Path, destination: Path, identity: FileIdentity | None = None
+) -> PlannedMove:
     return PlannedMove(
         action_id=action_id,
         source=source,
@@ -49,8 +50,13 @@ def _plan(root: Path, moves) -> OrganizationPlan:
     return OrganizationPlan(
         root=root,
         statistics=PlanStatistics(
-            total_files=len(moves), moves=len(moves), unchanged=0,
-            skipped=0, conflicts=0, protected=0, uncertain=0,
+            total_files=len(moves),
+            moves=len(moves),
+            unchanged=0,
+            skipped=0,
+            conflicts=0,
+            protected=0,
+            uncertain=0,
             directories_created=0,
         ),
         actions=tuple(moves),
@@ -78,15 +84,22 @@ def test_valid_plan_passes(env):
 def test_missing_source_is_refused(env):
     root, fs = env
     ghost = root / "deleted.txt"
-    plan = _plan(root, [
-        PlannedMove(
-            action_id=1, source=ghost, destination=root / "dest" / "x",
-            file_identity=None, reason="t", reason_code="T",
-            confidence=Confidence.HIGH,
-            arrangement_value=Recommendation.RECOMMENDED,
-            status=ActionStatus.MOVE,
-        )
-    ])
+    plan = _plan(
+        root,
+        [
+            PlannedMove(
+                action_id=1,
+                source=ghost,
+                destination=root / "dest" / "x",
+                file_identity=None,
+                reason="t",
+                reason_code="T",
+                confidence=Confidence.HIGH,
+                arrangement_value=Recommendation.RECOMMENDED,
+                status=ActionStatus.MOVE,
+            )
+        ],
+    )
     result = validate_plan(plan, fs, RuleSet.EMPTY)
     assert not result.valid and any("missing" in p for p in result.problems)
 
@@ -114,11 +127,15 @@ def test_two_actions_one_destination_are_refused(env):
     root, fs = env
     dest = root / "dest" / "clash"
     result = validate_plan(
-        _plan(root, [
-            _move(1, root / "a.txt", dest),
-            _move(2, root / "b.txt", dest),
-        ]),
-        fs, RuleSet.EMPTY,
+        _plan(
+            root,
+            [
+                _move(1, root / "a.txt", dest),
+                _move(2, root / "b.txt", dest),
+            ],
+        ),
+        fs,
+        RuleSet.EMPTY,
     )
     assert not result.valid and any("same destination" in p for p in result.problems)
 
@@ -130,11 +147,15 @@ def test_chained_moves_are_refused(env):
     (root / "bundle").mkdir()
     (root / "bundle" / "c.txt").write_text("C")
     result = validate_plan(
-        _plan(root, [
-            _move(1, root / "bundle", root / "dest" / "bundle"),
-            _move(2, root / "bundle" / "c.txt", root / "elsewhere" / "c.txt"),
-        ]),
-        fs, RuleSet.EMPTY,
+        _plan(
+            root,
+            [
+                _move(1, root / "bundle", root / "dest" / "bundle"),
+                _move(2, root / "bundle" / "c.txt", root / "elsewhere" / "c.txt"),
+            ],
+        ),
+        fs,
+        RuleSet.EMPTY,
     )
     assert not result.valid and any("chained move detected" in p for p in result.problems)
 
@@ -144,16 +165,23 @@ def test_protected_paths_are_refused_even_by_user_plans(env):
     rules = RuleSet(protected=(PathRule(path=Path("a.txt"), reason="keep"),))
     for target in ("source", "destination"):
         move = _move(1, root / "a.txt", root / "dest" / "a.txt")
-        moves = [move] if target == "source" else [
-            PlannedMove(
-                action_id=1, source=root / "b.txt",
-                destination=root / "a.txt",
-                file_identity=_identity(root / "b.txt"),
-                reason="t", reason_code="T", confidence=Confidence.HIGH,
-                arrangement_value=Recommendation.RECOMMENDED,
-                status=ActionStatus.MOVE,
-            )
-        ]
+        moves = (
+            [move]
+            if target == "source"
+            else [
+                PlannedMove(
+                    action_id=1,
+                    source=root / "b.txt",
+                    destination=root / "a.txt",
+                    file_identity=_identity(root / "b.txt"),
+                    reason="t",
+                    reason_code="T",
+                    confidence=Confidence.HIGH,
+                    arrangement_value=Recommendation.RECOMMENDED,
+                    status=ActionStatus.MOVE,
+                )
+            ]
+        )
         result = validate_plan(_plan(root, moves), fs, rules)
         assert not result.valid and any("protected" in p for p in result.problems)
 
@@ -161,15 +189,22 @@ def test_protected_paths_are_refused_even_by_user_plans(env):
 def test_require_valid_raises_stale_plan(env):
     root, fs = env
     ghost = root / "ghost.txt"
-    plan = _plan(root, [
-        PlannedMove(
-            action_id=1, source=ghost, destination=root / "dest" / "g",
-            file_identity=None, reason="t", reason_code="T",
-            confidence=Confidence.HIGH,
-            arrangement_value=Recommendation.RECOMMENDED,
-            status=ActionStatus.MOVE,
-        )
-    ])
+    plan = _plan(
+        root,
+        [
+            PlannedMove(
+                action_id=1,
+                source=ghost,
+                destination=root / "dest" / "g",
+                file_identity=None,
+                reason="t",
+                reason_code="T",
+                confidence=Confidence.HIGH,
+                arrangement_value=Recommendation.RECOMMENDED,
+                status=ActionStatus.MOVE,
+            )
+        ],
+    )
     with pytest.raises(StalePlanError):
         require_valid(plan, fs, RuleSet.EMPTY)
 
@@ -179,6 +214,7 @@ def test_validation_never_mutates(env):
     before = sorted(str(p) for p in root.rglob("*"))
     validate_plan(
         _plan(root, [_move(1, root / "a.txt", root / "dest" / "a.txt")]),
-        fs, RuleSet.EMPTY,
+        fs,
+        RuleSet.EMPTY,
     )
     assert sorted(str(p) for p in root.rglob("*")) == before

@@ -107,50 +107,83 @@ class Executor:
         for action in plan.moves:
             if action.status is not ActionStatus.MOVE:
                 continue
-            journal.record(JournalState.VALIDATED, action.action_id, action.source, action.destination)
-            journal.record(JournalState.STARTED, action.action_id, action.source, action.destination)
+            journal.record(
+                JournalState.VALIDATED, action.action_id, action.source, action.destination
+            )
+            journal.record(
+                JournalState.STARTED, action.action_id, action.source, action.destination
+            )
 
             try:
                 self._fs.move(action.source, action.destination)
             except DestinationExistsError as exc:
                 failed += 1
                 journal.record(
-                    JournalState.FAILED, action.action_id, action.source, action.destination,
+                    JournalState.FAILED,
+                    action.action_id,
+                    action.source,
+                    action.destination,
                     detail="destination exists; nothing was overwritten",
                 )
-                failures.append(ExecutionFailure(action.action_id, action.destination.name, "CONFLICT", str(exc)))
+                failures.append(
+                    ExecutionFailure(
+                        action.action_id, action.destination.name, "CONFLICT", str(exc)
+                    )
+                )
                 continue
             except CrossFilesystemMoveError as exc:
                 failed += 1
                 journal.record(
-                    JournalState.FAILED, action.action_id, action.source, action.destination,
+                    JournalState.FAILED,
+                    action.action_id,
+                    action.source,
+                    action.destination,
                     detail="cross-filesystem move blocked",
                 )
-                failures.append(ExecutionFailure(action.action_id, action.source.name, "CROSS_FILESYSTEM", str(exc)))
+                failures.append(
+                    ExecutionFailure(
+                        action.action_id, action.source.name, "CROSS_FILESYSTEM", str(exc)
+                    )
+                )
                 continue
             except OSError as exc:
                 failed += 1
                 journal.record(
-                    JournalState.FAILED, action.action_id, action.source, action.destination,
+                    JournalState.FAILED,
+                    action.action_id,
+                    action.source,
+                    action.destination,
                     detail=f"filesystem error: {exc.strerror or exc}",
                 )
-                failures.append(ExecutionFailure(action.action_id, action.source.name, "FILESYSTEM_ERROR", str(exc)))
+                failures.append(
+                    ExecutionFailure(
+                        action.action_id, action.source.name, "FILESYSTEM_ERROR", str(exc)
+                    )
+                )
                 continue
 
-            journal.record(JournalState.COMPLETED, action.action_id, action.source, action.destination)
+            journal.record(
+                JournalState.COMPLETED, action.action_id, action.source, action.destination
+            )
             moved += 1
 
             if self._verify(action):
-                journal.record(JournalState.VERIFIED, action.action_id, action.source, action.destination)
+                journal.record(
+                    JournalState.VERIFIED, action.action_id, action.source, action.destination
+                )
                 verified += 1
             else:
                 journal.record(
                     JournalState.RECOVERY_REQUIRED,
-                    action.action_id, action.source, action.destination,
+                    action.action_id,
+                    action.source,
+                    action.destination,
                     detail="verification could not confirm the moved file",
                 )
                 failures.append(
-                    ExecutionFailure(action.action_id, action.destination.name, "VERIFICATION_FAILED", "")
+                    ExecutionFailure(
+                        action.action_id, action.destination.name, "VERIFICATION_FAILED", ""
+                    )
                 )
                 failed += 1
 
@@ -179,9 +212,7 @@ class Executor:
         if info is None or not info.exists or ident is None:
             return False
         same_object = (
-            info.device == ident.device
-            and info.inode == ident.inode
-            and info.size == ident.size
+            info.device == ident.device and info.inode == ident.inode and info.size == ident.size
         )
         source_gone = not self._fs.exists(action.source)
         return same_object and source_gone

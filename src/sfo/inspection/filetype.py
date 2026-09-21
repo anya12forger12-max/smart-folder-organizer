@@ -21,18 +21,40 @@ TEXT_PROBE_BYTES = 1024
 # Extensions treated as safe-to-preview text even when sniffing is unsure.
 TEXT_EXTENSIONS = frozenset(
     {
-        ".txt", ".md", ".rst", ".log", ".csv", ".json", ".toml", ".yaml",
-        ".yml", ".ini", ".cfg", ".conf", ".py", ".js", ".ts", ".sh",
-        ".html", ".css", ".xml", ".c", ".h", ".cpp", ".rs", ".go", ".java",
+        ".txt",
+        ".md",
+        ".rst",
+        ".log",
+        ".csv",
+        ".json",
+        ".toml",
+        ".yaml",
+        ".yml",
+        ".ini",
+        ".cfg",
+        ".conf",
+        ".py",
+        ".js",
+        ".ts",
+        ".sh",
+        ".html",
+        ".css",
+        ".xml",
+        ".c",
+        ".h",
+        ".cpp",
+        ".rs",
+        ".go",
+        ".java",
     }
 )
 
 
 @dataclass(frozen=True, slots=True)
 class SniffResult:
-    label: str          # human description, e.g. "PDF document"
-    mime: str | None    # best-effort MIME, None when unknown
-    is_text: bool       # safe to show a text preview
+    label: str  # human description, e.g. "PDF document"
+    mime: str | None  # best-effort MIME, None when unknown
+    is_text: bool  # safe to show a text preview
 
 
 def _match_magic(header: bytes) -> SniffResult | None:

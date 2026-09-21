@@ -44,9 +44,7 @@ class AnalysisEngine:
     def analyze(self, scan: ScanResult) -> AnalysisResult:
         scannable = [f for f in scan.files if f.is_scannable]
 
-        duplicate_groups = tuple(
-            find_duplicate_groups(scannable, self._fs)
-        )
+        duplicate_groups = tuple(find_duplicate_groups(scannable, self._fs))
         projects = detect_projects(scan)
 
         project_of: dict[Path, str] = {}
@@ -113,12 +111,11 @@ class AnalysisEngine:
                 classifications[path] = Classification.uncertain()
 
         uncertain = tuple(
-            path for path in sorted(classifications)
+            path
+            for path in sorted(classifications)
             if classifications[path].kind is ClassificationKind.UNCERTAIN
         )
-        skipped = tuple(
-            f.absolute_path for f in scan.files if not f.is_scannable
-        )
+        skipped = tuple(f.absolute_path for f in scan.files if not f.is_scannable)
 
         return AnalysisResult(
             root=scan.root,
@@ -166,6 +163,4 @@ def _build_graph(projects, topics, duplicate_groups) -> RelationshipGraph:  # no
                     confidence=Confidence.HIGH,
                 )
             )
-    return RelationshipGraph(
-        nodes=tuple(sorted({e.source for e in edges})), edges=tuple(edges)
-    )
+    return RelationshipGraph(nodes=tuple(sorted({e.source for e in edges})), edges=tuple(edges))

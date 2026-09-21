@@ -47,8 +47,14 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_org = sub.add_parser("organize", help="organize a folder (preview + confirm)")
     p_org.add_argument("folder")
-    p_org.add_argument("--yes", action="store_true", help="skip the confirmation prompt; all safety checks still run")
-    p_org.add_argument("--dry-run", action="store_true", help="plan and preview without any changes")
+    p_org.add_argument(
+        "--yes",
+        action="store_true",
+        help="skip the confirmation prompt; all safety checks still run",
+    )
+    p_org.add_argument(
+        "--dry-run", action="store_true", help="plan and preview without any changes"
+    )
     p_org.add_argument("--json", action="store_true", help="machine-readable output")
     p_org.add_argument("--details", action="store_true", help="list every planned move")
     _common(p_org)
@@ -70,7 +76,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_hist.add_argument("--limit", type=int, default=10)
 
     p_rules = sub.add_parser("rules", help="manage organization rules")
-    p_rules.add_argument("action", nargs="?", default="list", choices=["list", "enable", "disable", "delete", "test"])
+    p_rules.add_argument(
+        "action", nargs="?", default="list", choices=["list", "enable", "disable", "delete", "test"]
+    )
     p_rules.add_argument("target", nargs="?", help="rule id (or folder for 'test')")
 
     p_dup = sub.add_parser(
@@ -88,7 +96,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_inspect.add_argument("path")
     p_inspect.add_argument("--hash", action="store_true", help="compute the SHA-256 content hash")
     p_inspect.add_argument("--preview", action="store_true", help="bounded text preview")
-    p_inspect.add_argument("--duplicates", action="store_true", help="check its folder for duplicate copies")
+    p_inspect.add_argument(
+        "--duplicates", action="store_true", help="check its folder for duplicate copies"
+    )
     p_inspect.add_argument("--json", action="store_true", help="machine-readable output")
     _common(p_inspect)
 
@@ -102,7 +112,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_diag = sub.add_parser("diagnostics", help="local diagnostic summary")
     p_diag.add_argument("--summary", action="store_true")
-    p_diag.add_argument("--clear", action="store_true", help="clear journals/history metadata (asks to confirm)")
+    p_diag.add_argument(
+        "--clear", action="store_true", help="clear journals/history metadata (asks to confirm)"
+    )
 
     for name in ("protect", "unprotect", "ignore", "unignore"):
         p = sub.add_parser(name, help=f"{name} a path (configuration change only)")
@@ -168,15 +180,12 @@ def main(argv: list[str] | None = None) -> int:
             from sfo.cli.crash import record_crash
             from sfo.config.paths import AppPaths
 
-            location = record_crash(
-                AppPaths.default().data_dir, sys.argv[1:], exc
-            )
+            location = record_crash(AppPaths.default().data_dir, sys.argv[1:], exc)
             hint = f" Diagnostic record: {location}"
         except Exception:
             pass  # diagnostics must never mask the original failure
         print(
-            f"Unexpected error ({type(exc).__name__}).{hint} "
-            "Run with --debug for details.",
+            f"Unexpected error ({type(exc).__name__}).{hint} Run with --debug for details.",
             file=sys.stderr,
         )
         if getattr(args, "debug", False):

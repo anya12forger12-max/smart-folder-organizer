@@ -119,7 +119,9 @@ class ArrangementEngine:
                 1 for a in actions if a.status in (ActionStatus.SKIP, ActionStatus.PROTECTED)
             ),
             conflicts=sum(
-                1 for a in actions if a.status in (ActionStatus.CONFLICT, ActionStatus.REVIEW_REQUIRED)
+                1
+                for a in actions
+                if a.status in (ActionStatus.CONFLICT, ActionStatus.REVIEW_REQUIRED)
             ),
             protected=sum(1 for a in actions if a.status is ActionStatus.PROTECTED),
             uncertain=sum(1 for a in actions if a.status is ActionStatus.UNCERTAIN),
@@ -221,8 +223,9 @@ class ArrangementEngine:
         # splits a file that already lives inside its on-disk project).
         context = RuleContext(
             record=record,
-            project_name=(analysis.project_for(abs_path).name
-                          if analysis.project_for(abs_path) else None),
+            project_name=(
+                analysis.project_for(abs_path).name if analysis.project_for(abs_path) else None
+            ),
             topic_name=analysis.topic_for(abs_path),
             is_duplicate=abs_path in dup_targets,
             relative_path_posix=rel.as_posix(),
@@ -329,8 +332,7 @@ class ArrangementEngine:
                 ActionStatus.KEEP,
                 None,
                 "TOPIC_TOO_SMALL",
-                f"resembles topic '{topic_name}', but the group is too small "
-                "to justify a folder",
+                f"resembles topic '{topic_name}', but the group is too small to justify a folder",
                 Confidence.LOW,
                 None,
             )

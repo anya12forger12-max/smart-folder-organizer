@@ -78,9 +78,7 @@ def validate_plan(
     # A move of a directory D makes every planned source inside D vanish
     # mid-transaction (order-dependent execution); refuse those too.
     moved_dirs = [
-        a.source
-        for a in plan.moves
-        if fs.inspect(a.source).file_type is FileType.DIRECTORY
+        a.source for a in plan.moves if fs.inspect(a.source).file_type is FileType.DIRECTORY
     ]
     for action in plan.moves:
         ancestors = (*destinations, *moved_dirs)

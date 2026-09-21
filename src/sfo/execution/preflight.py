@@ -92,9 +92,7 @@ def run_preflight(
         if action.destination.exists():
             if action.destination != action.source:
                 blocked.add(action.action_id)
-                problems.append(
-                    f"destination appeared since preview: {action.destination.name}"
-                )
+                problems.append(f"destination appeared since preview: {action.destination.name}")
         if not str(action.destination).startswith(str(plan.root)):
             blocked.add(action.action_id)
             problems.append(f"destination outside root: {action.destination}")
@@ -102,9 +100,7 @@ def run_preflight(
     if problems:
         destination_conflicts = [p for p in problems if "destination appeared" in p]
         if len(destination_conflicts) == len(problems):
-            raise DestinationExistsError(
-                "a planned destination already exists", details=problems
-            )
+            raise DestinationExistsError("a planned destination already exists", details=problems)
         raise SecurityError("preflight failed", details=problems)
 
     return PreflightResult(ok=True, blocked_action_ids=frozenset(blocked))

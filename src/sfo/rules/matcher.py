@@ -17,8 +17,14 @@ def parse_size(raw: str | int | float) -> float:
         return float(raw)
     text = str(raw).strip().upper().replace(" ", "")
     units = {
-        "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3,
-        "KB": 1000, "MB": 1000**2, "GB": 1000**3, "B": 1, "": 1,
+        "KIB": 1024,
+        "MIB": 1024**2,
+        "GIB": 1024**3,
+        "KB": 1000,
+        "MB": 1000**2,
+        "GB": 1000**3,
+        "B": 1,
+        "": 1,
     }
     for suffix in ("KIB", "MIB", "GIB", "KB", "MB", "GB", "B"):
         if text.endswith(suffix):
@@ -49,9 +55,8 @@ def matches(condition: Condition, context: RuleContext) -> bool:
         right = parse_timestamp(condition.value)
         second = parse_timestamp(condition.value2) if condition.value2 is not None else None
     elif isinstance(actual, bool):
-        return (
-            (operator.value == "is_true" and actual)
-            or (operator.value == "is_false" and not actual)
+        return (operator.value == "is_true" and actual) or (
+            operator.value == "is_false" and not actual
         )
     else:
         left = str(actual).casefold()

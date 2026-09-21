@@ -27,9 +27,7 @@ def reverse_actions(journal_path: Path) -> tuple[PlannedMove, ...]:
     entries = load_journal(journal_path)
     verified = [e for e in entries if e.state is JournalState.VERIFIED]
     if not verified:
-        raise JournalError(
-            "no verified moves found in this journal; nothing can be undone"
-        )
+        raise JournalError("no verified moves found in this journal; nothing can be undone")
     reversed_moves = []
     for index, entry in enumerate(verified, start=1):
         # Identity is deliberately re-established from LIVE state by the

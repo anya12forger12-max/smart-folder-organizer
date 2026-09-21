@@ -97,8 +97,16 @@ class Database:
                 " source, destination, expected_identity, result_identity, status,"
                 " error, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
-                    txn_id, seq, op_kind, str(source), str(destination),
-                    expected_identity, result_identity, status, error, _now(),
+                    txn_id,
+                    seq,
+                    op_kind,
+                    str(source),
+                    str(destination),
+                    expected_identity,
+                    result_identity,
+                    status,
+                    error,
+                    _now(),
                 ),
             )
             conn.commit()
@@ -106,7 +114,9 @@ class Database:
             conn.close()
 
     # -- queries -----------------------------------------------------------
-    def list_transactions(self, limit: int = 20, kinds: tuple[str, ...] = (_KIND_ORGANIZE,)) -> list[dict]:
+    def list_transactions(
+        self, limit: int = 20, kinds: tuple[str, ...] = (_KIND_ORGANIZE,)
+    ) -> list[dict]:
         conn = self.connect()
         try:
             placeholders = ",".join("?" for _ in kinds)
@@ -191,9 +201,7 @@ class Database:
 
     # ---------------------------------------------------------------------
     def _ext(self, conn: sqlite3.Connection, txn_id: int) -> dict:
-        row = conn.execute(
-            "SELECT value FROM meta WHERE key = ?", (f"opmap:{txn_id}",)
-        ).fetchone()
+        row = conn.execute("SELECT value FROM meta WHERE key = ?", (f"opmap:{txn_id}",)).fetchone()
         return {"operation_id": row["value"] if row else f"txn-{txn_id}"}
 
 

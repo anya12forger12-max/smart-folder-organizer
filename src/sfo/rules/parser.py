@@ -83,9 +83,7 @@ def save_rules(path: Path, rules: list[OrganizationRule]) -> None:
 
 def _toml_str(value: str) -> str:
     out = value.replace("\\", "\\\\").replace('"', '\\"')
-    out = "".join(
-        f"\\u{ord(ch):04X}" if ord(ch) < 32 else ch for ch in out
-    )
+    out = "".join(f"\\u{ord(ch):04X}" if ord(ch) < 32 else ch for ch in out)
     return f'"{out}"'
 
 
@@ -149,8 +147,7 @@ def _parse_rule(entry: object, index: int) -> OrganizationRule:
     priority = entry.get("priority", USER_RULE_DEFAULT_PRIORITY)
     if not isinstance(priority, int) or not (MIN_PRIORITY <= priority <= MAX_PRIORITY):
         raise RuleConfigError(
-            f"rule '{rule_id}': priority must be an integer in "
-            f"[{MIN_PRIORITY}, {MAX_PRIORITY}]"
+            f"rule '{rule_id}': priority must be an integer in [{MIN_PRIORITY}, {MAX_PRIORITY}]"
         )
 
     conditions_raw = entry.get("conditions", [])

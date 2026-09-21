@@ -23,9 +23,7 @@ def validate_private_directory(path: Path) -> None:
     if not stat.S_ISDIR(st.st_mode):
         raise UnsafePermissionsError(f"not a directory: {path}")
     if st.st_uid != os.geteuid():
-        raise UnsafePermissionsError(
-            f"{path} is owned by uid {st.st_uid}, not by the current user"
-        )
+        raise UnsafePermissionsError(f"{path} is owned by uid {st.st_uid}, not by the current user")
     if stat.S_IMODE(st.st_mode) & 0o077:
         raise UnsafePermissionsError(
             f"{path} is accessible by group/others; expected private (0700)"

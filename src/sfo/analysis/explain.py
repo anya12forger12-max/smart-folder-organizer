@@ -9,9 +9,15 @@ from __future__ import annotations
 from sfo.domain.analysis import Classification, ClassificationKind
 
 _TEMPLATES = {
-    (ClassificationKind.PROJECT, "VERY_HIGH"): "Almost certainly part of the {name} project: {evidence}",
+    (
+        ClassificationKind.PROJECT,
+        "VERY_HIGH",
+    ): "Almost certainly part of the {name} project: {evidence}",
     (ClassificationKind.PROJECT, "HIGH"): "Likely part of the {name} project because {evidence}",
-    (ClassificationKind.PROJECT, "MEDIUM"): "Possibly part of the {name} project based on {evidence}",
+    (
+        ClassificationKind.PROJECT,
+        "MEDIUM",
+    ): "Possibly part of the {name} project based on {evidence}",
     (ClassificationKind.TOPIC, "MEDIUM"): "Possibly related to {name} based on {evidence}",
     (ClassificationKind.TOPIC, "HIGH"): "Related to {name} based on {evidence}",
 }
@@ -28,7 +34,9 @@ class ExplanationFormatter:
                 name=classification.name, confidence=classification.confidence.value.lower()
             ),
         )
-        summary = "; ".join(e.description for e in classification.evidence[:2]) or "related files nearby"
+        summary = (
+            "; ".join(e.description for e in classification.evidence[:2]) or "related files nearby"
+        )
         return template.format(name=classification.name, evidence=summary)
 
     def group_summary(self, kind_label: str, name: str, count: int, destination=None) -> str:

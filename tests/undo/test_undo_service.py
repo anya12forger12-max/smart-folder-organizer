@@ -63,8 +63,13 @@ def _plan(root: Path, pairs) -> OrganizationPlan:
     return OrganizationPlan(
         root=root,
         statistics=PlanStatistics(
-            total_files=len(moves), moves=len(moves), unchanged=0,
-            skipped=0, conflicts=0, protected=0, uncertain=0,
+            total_files=len(moves),
+            moves=len(moves),
+            unchanged=0,
+            skipped=0,
+            conflicts=0,
+            protected=0,
+            uncertain=0,
             directories_created=0,
         ),
         actions=tuple(moves),
@@ -78,10 +83,13 @@ def test_undo_roundtrip_restores_original_structure(world):
     (root / "a.txt").write_text("A")
     (root / "b.txt").write_text("B")
     dest = root / "sorted"
-    plan = _plan(root, [
-        (root / "a.txt", dest / "a.txt"),
-        (root / "b.txt", dest / "b.txt"),
-    ])
+    plan = _plan(
+        root,
+        [
+            (root / "a.txt", dest / "a.txt"),
+            (root / "b.txt", dest / "b.txt"),
+        ],
+    )
     result = Executor(fs, paths.data_dir).execute(plan)
     assert result.failed == 0 and result.moved == 2
 
@@ -156,7 +164,9 @@ def test_history_records_undo_operations(world):
     forward_op = new_operation_id()
     db = Database(paths.database_path)
     txn_id = db.record_transaction(
-        kind="ORGANIZE", root=root, plan_fingerprint="test",
+        kind="ORGANIZE",
+        root=root,
+        plan_fingerprint="test",
         external_id=forward_op,
     )
     db.set_transaction_status(txn_id, "EXECUTING")

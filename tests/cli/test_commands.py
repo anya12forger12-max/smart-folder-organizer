@@ -115,8 +115,14 @@ def test_preview_json_contract_and_read_only(cli_env, capsys):
     assert payload["root"] == str(cli_env.root)
     stats = payload["statistics"]
     assert set(stats) == {
-        "total_files", "moves", "unchanged", "skipped",
-        "conflicts", "protected", "uncertain", "directories_created",
+        "total_files",
+        "moves",
+        "unchanged",
+        "skipped",
+        "conflicts",
+        "protected",
+        "uncertain",
+        "directories_created",
     }
     assert stats["moves"] > 0
     assert stats["total_files"] >= stats["moves"]
@@ -148,8 +154,8 @@ def test_organize_executes_moves_and_is_idempotent(cli_env, capsys):
     moved = payload["statistics"]["moves"]
     assert moved > 0
     after = _tree_snapshot(cli_env.root)
-    assert len(after) == len(before)          # nothing lost
-    assert after != before                    # something actually moved
+    assert len(after) == len(before)  # nothing lost
+    assert after != before  # something actually moved
 
     # Repeat runs must CONVERGE: move counts never increase and reach a
     # stable zero (duplicate splitting can take more than one pass).
@@ -205,11 +211,11 @@ def test_hostile_rules_cannot_influence_plan(cli_env, capsys):
     rules_file.parent.mkdir(parents=True)
     # A well-formed TOML file whose destination escapes the root.
     rules_file.write_text(
-        'config_version = 1\n'
-        '[[rules]]\n'
+        "config_version = 1\n"
+        "[[rules]]\n"
         'id = "R-EVIL"\n'
         'name = "escape"\n'
-        'priority = 99\n'
+        "priority = 99\n"
         'action = "prefer_directory"\n'
         'destination = "../../outside"\n'
         'conditions = [{ field = "filename", operator = "contains", value = "." }]\n',
@@ -283,10 +289,18 @@ def test_inspect_missing_file_fails_cleanly(cli_env, capsys):
 # informational commands on a pristine isolated installation
 
 
-@pytest.mark.parametrize("command", [
-    ("status",), ("doctor",), ("config",), ("recover",),
-    ("protected",), ("ignored",), ("diagnostics", "--summary"),
-])
+@pytest.mark.parametrize(
+    "command",
+    [
+        ("status",),
+        ("doctor",),
+        ("config",),
+        ("recover",),
+        ("protected",),
+        ("ignored",),
+        ("diagnostics", "--summary"),
+    ],
+)
 def test_informational_commands_succeed_on_clean_install(cli_env, capsys, command):
     assert main(list(command)) == 0
     assert capsys.readouterr().out  # produces human-readable output

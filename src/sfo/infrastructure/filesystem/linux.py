@@ -130,8 +130,7 @@ class LinuxFileSystem(FileSystem):
             raise FileSystemError(f"path exists and is not a directory: {path}") from exc
         except PermissionError as exc:
             raise FileSystemError(
-                f"cannot create directory {path}: permission denied "
-                "(filesystem may be read-only)"
+                f"cannot create directory {path}: permission denied (filesystem may be read-only)"
             ) from exc
         except OSError as exc:
             raise FileSystemError(f"cannot create directory {path}: {exc}") from exc
@@ -156,9 +155,7 @@ class LinuxFileSystem(FileSystem):
             if exc.errno == errno.ENOSPC:
                 raise FileSystemError("filesystem is full; nothing was changed") from exc
             if exc.errno == errno.EROFS:
-                raise FileSystemError(
-                    "filesystem is read-only; nothing was changed"
-                ) from exc
+                raise FileSystemError("filesystem is read-only; nothing was changed") from exc
             if exc.errno == errno.EXDEV:
                 raise CrossFilesystemMoveError(
                     f"{source} and {destination} are on different filesystems; "

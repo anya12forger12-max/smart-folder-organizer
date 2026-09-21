@@ -29,8 +29,15 @@ SCHEMA_VERSION = 1
 # Bounded project-marker walk-up: nearest directory carrying these wins.
 _STRONG_MARKERS = frozenset({".git"})
 _MODERATE_MARKERS = frozenset(
-    {"pyproject.toml", "package.json", "Cargo.toml", "setup.py",
-     "requirements.txt", "go.mod", "Makefile"}
+    {
+        "pyproject.toml",
+        "package.json",
+        "Cargo.toml",
+        "setup.py",
+        "requirements.txt",
+        "go.mod",
+        "Makefile",
+    }
 )
 _WEAK_MARKERS = frozenset({"README.md", "README.txt", "README"})
 
@@ -43,17 +50,17 @@ _TREE_MAX_ENTRIES = 40
 class InspectionDeps:
     """Everything the inspector reads from; injected for testability."""
 
-    fs: object                      # FileSystem
-    ruleset: object                 # domain RuleSet (protected/ignored)
-    org_rules: list                 # user OrganizationRules
+    fs: object  # FileSystem
+    ruleset: object  # domain RuleSet (protected/ignored)
+    org_rules: list  # user OrganizationRules
     database: object | None = None  # history Database or None
 
 
 @dataclass(frozen=True, slots=True)
 class InspectionReport:
     schema_version: int
-    state: str                       # CURRENT / MISSING / ...
-    kind: str                        # FILE / DIRECTORY / SYMLINK / SPECIAL
+    state: str  # CURRENT / MISSING / ...
+    kind: str  # FILE / DIRECTORY / SYMLINK / SPECIAL
     absolute_path: str
     name: str
     parent: str
@@ -135,7 +142,8 @@ class InspectionReport:
             "hash_sha256": self.hash_hex,
             "preview": (
                 {"text": self.preview_text, "note": self.preview_note}
-                if self.preview_text is not None or self.preview_note else None
+                if self.preview_text is not None or self.preview_note
+                else None
             ),
             "symlink": (
                 {
@@ -143,7 +151,8 @@ class InspectionReport:
                     "target_exists": self.symlink_target_exists,
                     "external": self.symlink_external,
                 }
-                if self.kind == "SYMLINK" else None
+                if self.kind == "SYMLINK"
+                else None
             ),
             "directory": self.directory_stats,
             "history": [dict(item) for item in self.history],
@@ -234,7 +243,10 @@ def inspect_path(
         and sniffed.mime
         and sniffed.mime.split("/")[0] != extension_mime.split("/")[0]
         and not (sniffed.mime == "text/plain" and extension_mime.startswith("text/"))
-        and not (sniffed.label == "ZIP-based archive or document" and extension_mime.startswith("application/"))
+        and not (
+            sniffed.label == "ZIP-based archive or document"
+            and extension_mime.startswith("application/")
+        )
     )
     # A text-sniffed file with a document/archive extension is suspicious too
     # (e.g. photo.pdf that is really plain text).
@@ -343,9 +355,7 @@ def inspect_path(
         symlink_external=(
             _symlink_external(target, info.symlink_target) if kind == "SYMLINK" else None
         ),
-        directory_stats=(
-            _directory_stats(fs, target) if kind == "DIRECTORY" else None
-        ),
+        directory_stats=(_directory_stats(fs, target) if kind == "DIRECTORY" else None),
         history=tuple(_history_for(deps, target)),
     )
 
@@ -356,14 +366,12 @@ def _protection_of(deps: InspectionDeps, target: Path) -> tuple[str, str | None]
     try:
         if ruleset.is_protected(target.parent, target):
             reason = next(
-                (rule.reason for rule in getattr(ruleset, "protected", ())
-                 if rule.reason), None
+                (rule.reason for rule in getattr(ruleset, "protected", ()) if rule.reason), None
             )
             return "Protected", reason
         if ruleset.is_ignored(target.parent, target):
             reason = next(
-                (rule.reason for rule in getattr(ruleset, "ignored", ())
-                 if rule.reason), None
+                (rule.reason for rule in getattr(ruleset, "ignored", ()) if rule.reason), None
             )
             return "Ignored", reason
     except Exception:  # noqa: BLE001 - protection display must never crash inspect
@@ -411,13 +419,13 @@ def _duplicate_context(target: Path, deps: InspectionDeps):
     for group in report.groups:
         for member in group.files:
             same_object = (
-                member.inode == info.inode and member.device == info.device
+                member.inode == info.inode
+                and member.device == info.device
                 and info.inode is not None
             )
             if member.path.resolve(strict=False) == resolved or same_object:
                 copies = [
-                    str(f.path) for f in group.files
-                    if f.path.resolve(strict=False) != resolved
+                    str(f.path) for f in group.files if f.path.resolve(strict=False) != resolved
                 ]
                 label = {
                     "CONFIRMED": "Confirmed duplicate",

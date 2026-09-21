@@ -57,8 +57,9 @@ def _rule(destination: str, rule_id: str = "R-ATTACK") -> OrganizationRule:
         name="attack",
         priority=10,
         action=RuleAction.PREFER_DIRECTORY,
-        conditions=(Condition(field=RuleField.FILENAME,
-                              operator=RuleOperator.CONTAINS, value="x"),),
+        conditions=(
+            Condition(field=RuleField.FILENAME, operator=RuleOperator.CONTAINS, value="x"),
+        ),
         destination=destination,
         enabled=True,
     )
@@ -113,8 +114,13 @@ def _plan(root: Path, pairs) -> OrganizationPlan:
     return OrganizationPlan(
         root=root,
         statistics=PlanStatistics(
-            total_files=len(moves), moves=len(moves), unchanged=0,
-            skipped=0, conflicts=0, protected=0, uncertain=0,
+            total_files=len(moves),
+            moves=len(moves),
+            unchanged=0,
+            skipped=0,
+            conflicts=0,
+            protected=0,
+            uncertain=0,
             directories_created=0,
         ),
         actions=tuple(moves),
@@ -148,23 +154,27 @@ def _run(world, pairs) -> str:
 # 1. hostile rule configuration
 
 
-@pytest.mark.parametrize("destination", [
-    "../escape",
-    "/etc/passwd",
-    "a/../../b",
-    "~/secrets",
-    "School/Physics; rm -rf /",
-    "$(whoami)",
-    "ok\n../evil",
-])
+@pytest.mark.parametrize(
+    "destination",
+    [
+        "../escape",
+        "/etc/passwd",
+        "a/../../b",
+        "~/secrets",
+        "School/Physics; rm -rf /",
+        "$(whoami)",
+        "ok\n../evil",
+    ],
+)
 def test_rule_destination_attacks_are_rejected(destination):
     assert validate_rules([_rule(destination)]), f"accepted: {destination!r}"
 
 
 def test_glob_characters_match_literally_not_as_wildcards():
     ctx = _context("notes.pdf")
-    assert not matches(Condition(field=RuleField.FILENAME,
-                                 operator=RuleOperator.ENDS_WITH, value="*.pdf"), ctx)
+    assert not matches(
+        Condition(field=RuleField.FILENAME, operator=RuleOperator.ENDS_WITH, value="*.pdf"), ctx
+    )
 
 
 def test_matcher_survives_control_character_filenames():
@@ -197,8 +207,7 @@ def test_scanner_never_follows_symlinks_out_of_root(world, tmp_path):
     assert not any("secret" in p for p in seen), seen
     assert len(result.symlinks) == 0
     assert any(
-        "linkdir" in str(err.path) and "escaped root" in err.message
-        for err in result.errors
+        "linkdir" in str(err.path) and "escaped root" in err.message for err in result.errors
     )
 
 
@@ -293,10 +302,13 @@ def test_corrupt_midjournal_line_refuses_undo(world):
     root, paths, fs = world
     (root / "one.txt").write_text("1")
     (root / "two.txt").write_text("2")
-    op = _run(world, [
-        (root / "one.txt", root / "m1.txt"),
-        (root / "two.txt", root / "m2.txt"),
-    ])
+    op = _run(
+        world,
+        [
+            (root / "one.txt", root / "m1.txt"),
+            (root / "two.txt", root / "m2.txt"),
+        ],
+    )
     journal = paths.journal_dir / f"{op}.jsonl"
     lines = journal.read_text().splitlines()
     lines.insert(len(lines) // 2, '{"kind":"ACTION","state":"VERIFIED"')  # torn
@@ -331,8 +343,7 @@ def test_unknown_journal_state_value_refused(world):
     for entry in lines:
         if entry.get("kind") == "ACTION":
             entry["state"] = "GRANTED_BY_ADMIN"
-    journal.write_text("\n".join(json.dumps(e) for e in lines) + "\n",
-                       encoding="utf-8")
+    journal.write_text("\n".join(json.dumps(e) for e in lines) + "\n", encoding="utf-8")
 
     with pytest.raises(JournalError):
         load_journal(journal)
@@ -373,10 +384,13 @@ def test_plan_source_inside_other_actions_moved_directory_refused(world):
     loose.write_text("y")
 
     # Action 2's source lives inside the directory action 1 moves away.
-    plan = _plan(root, [
-        (folder, root / "moved-batch"),
-        (folder / "inner.txt", root / "unpacked.txt"),
-    ])
+    plan = _plan(
+        root,
+        [
+            (folder, root / "moved-batch"),
+            (folder / "inner.txt", root / "unpacked.txt"),
+        ],
+    )
 
     result = validate_plan(plan, fs, RuleSet.EMPTY)
     assert not result.valid

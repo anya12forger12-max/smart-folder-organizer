@@ -109,17 +109,13 @@ class DuplicateScanner:
             try:
                 entries = sorted(self._fs.list_directory(current))
             except OSError as exc:
-                problems.append(
-                    f"cannot read directory {current.name}: {exc.strerror or exc}"
-                )
+                problems.append(f"cannot read directory {current.name}: {exc.strerror or exc}")
                 continue
             for entry in entries:
                 try:
                     info = self._fs.inspect(entry)
                 except OSError as exc:
-                    problems.append(
-                        f"cannot inspect {entry.name}: {exc.strerror or exc}"
-                    )
+                    problems.append(f"cannot inspect {entry.name}: {exc.strerror or exc}")
                     continue
                 yield entry, info
                 if info.file_type is FileType.DIRECTORY and entry.name not in VCS_DIRS:
@@ -195,9 +191,7 @@ class DuplicateScanner:
 
         # Deterministic presentation: biggest recoverable savings first;
         # ties broken by path so identical inputs give identical group IDs.
-        groups.sort(
-            key=lambda g: (-g.redundant_bytes, g.kind, str(g.files[0].path))
-        )
+        groups.sort(key=lambda g: (-g.redundant_bytes, g.kind, str(g.files[0].path)))
         return [
             DuplicateGroup(
                 group_id=f"DUP-{index:04d}",

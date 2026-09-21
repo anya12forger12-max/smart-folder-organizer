@@ -25,7 +25,5 @@ def resolve_within(root: Path, candidate: Path) -> Path:
     resolved_root = Path(root).resolve(strict=False)
     resolved = Path(candidate).resolve(strict=False)
     if resolved != resolved_root and resolved_root not in resolved.parents:
-        raise PathOutsideRootError(
-            f"path {candidate} resolves outside selected root {root}"
-        )
+        raise PathOutsideRootError(f"path {candidate} resolves outside selected root {root}")
     return resolved

@@ -98,7 +98,9 @@ class OrganizationPlan:
     @property
     def conflicts(self) -> tuple[PlannedMove, ...]:
         return tuple(
-            a for a in self.actions if a.status in (ActionStatus.CONFLICT, ActionStatus.REVIEW_REQUIRED)
+            a
+            for a in self.actions
+            if a.status in (ActionStatus.CONFLICT, ActionStatus.REVIEW_REQUIRED)
         )
 
     @property

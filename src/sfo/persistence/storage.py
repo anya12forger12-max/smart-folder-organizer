@@ -37,6 +37,4 @@ def initialize_storage(paths: AppPaths) -> InitializationReport:
         os.chmod(db_path, 0o600)
     for directory in (paths.config_dir, paths.data_dir):
         validate_private_directory(directory)
-    return InitializationReport(
-        ensured_dirs=ensured, database_path=db_path, schema_version=version
-    )
+    return InitializationReport(ensured_dirs=ensured, database_path=db_path, schema_version=version)

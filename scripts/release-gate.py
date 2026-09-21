@@ -8,6 +8,7 @@ Exit codes:
   1 = RELEASE BLOCKED
   2 = RELEASE REQUIRES REVIEW
 """
+
 from __future__ import annotations
 import json
 import os
@@ -33,7 +34,9 @@ def gate(name: str, fn):
     try:
         ok, detail = fn()
         elapsed = round(time.time() - start, 2)
-        results.append({"gate": name, "status": "PASS" if ok else "FAIL", "detail": detail, "seconds": elapsed})
+        results.append(
+            {"gate": name, "status": "PASS" if ok else "FAIL", "detail": detail, "seconds": elapsed}
+        )
         return ok
     except Exception as e:
         elapsed = round(time.time() - start, 2)
@@ -42,6 +45,7 @@ def gate(name: str, fn):
 
 
 # ── Gates ──────────────────────────────────────────────────────────────
+
 
 def gate_version_consistency():
     init_v = (SRC / "sfo" / "__init__.py").read_text()
@@ -66,7 +70,10 @@ def gate_source_clean():
 def gate_no_secrets():
     """Grep for obvious secrets in source."""
     import re
-    pattern = re.compile(r"(api[_-]?key|password|secret[_-]?key|private[_-]?key)\s*=\s*['\"][^'\"]{8,}", re.I)
+
+    pattern = re.compile(
+        r"(api[_-]?key|password|secret[_-]?key|private[_-]?key)\s*=\s*['\"][^'\"]{8,}", re.I
+    )
     for py in SRC.rglob("*.py"):
         if pattern.search(py.read_text(errors="ignore")):
             return False, f"possible secret in {py}"
@@ -76,6 +83,7 @@ def gate_no_secrets():
 def gate_no_network():
     """Verify no network imports in production source."""
     import ast
+
     banned = {"socket", "http", "urllib", "requests", "aiohttp", "httpx"}
     for py in SRC.rglob("*.py"):
         try:
@@ -100,11 +108,16 @@ def gate_test_suite():
     summary line is always emitted, even under a captured (non-TTY) stdout.
     """
     import re
+
     env = os.environ.copy()
     env["PYTHONPATH"] = str(SRC)
     r = subprocess.run(
         [sys.executable, "-m", "pytest", "--tb=short", str(TESTS)],
-        capture_output=True, text=True, cwd=str(ROOT), env=env, timeout=120,
+        capture_output=True,
+        text=True,
+        cwd=str(ROOT),
+        env=env,
+        timeout=120,
     )
     output = r.stdout + r.stderr
     m = re.search(r"(\d+) passed", output)
@@ -126,7 +139,11 @@ def gate_security_suite():
     env["PYTHONPATH"] = str(SRC)
     r = subprocess.run(
         [sys.executable, "-m", "pytest", str(TESTS / "security"), "-q", "--tb=short"],
-        capture_output=True, text=True, cwd=str(ROOT), env=env, timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=str(ROOT),
+        env=env,
+        timeout=60,
     )
     output = r.stdout + r.stderr
     for line in reversed(output.splitlines()):
@@ -145,7 +162,10 @@ def gate_build():
     """Build wheel and sdist."""
     r = subprocess.run(
         [sys.executable, "-m", "build", "--no-isolation"],
-        capture_output=True, text=True, cwd=str(ROOT), timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=str(ROOT),
+        timeout=60,
     )
     if r.returncode != 0:
         return False, f"build failed: {r.stderr[:200]}"
@@ -160,15 +180,18 @@ def gate_wheel_install():
     """Install wheel in isolated venv and verify import + CLI."""
     with tempfile.TemporaryDirectory() as tmpdir:
         venv = Path(tmpdir) / "venv"
-        subprocess.run([sys.executable, "-m", "venv", str(venv)], check=True,
-                       capture_output=True, timeout=30)
+        subprocess.run(
+            [sys.executable, "-m", "venv", str(venv)], check=True, capture_output=True, timeout=30
+        )
         pip = venv / "bin" / "pip"
         wheels = list(DIST.glob("*.whl"))
         if not wheels:
             return False, "no wheel found"
         r = subprocess.run(
             [str(pip), "install", "--quiet", str(wheels[0])],
-            capture_output=True, text=True, timeout=60,
+            capture_output=True,
+            text=True,
+            timeout=60,
         )
         if r.returncode != 0:
             return False, f"pip install failed: {r.stderr[:200]}"
@@ -176,7 +199,9 @@ def gate_wheel_install():
         py = venv / "bin" / "python"
         r = subprocess.run(
             [str(py), "-c", "import sfo; print(sfo.__version__)"],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         if r.returncode != 0:
             return False, f"import failed: {r.stderr[:200]}"
@@ -185,7 +210,9 @@ def gate_wheel_install():
         sfo = venv / "bin" / "sfo"
         r = subprocess.run(
             [str(sfo), "--help"],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         if r.returncode != 0:
             return False, "CLI --help failed"
@@ -198,7 +225,11 @@ def gate_recovery_drills():
     env["PYTHONPATH"] = str(SRC)
     r = subprocess.run(
         [sys.executable, "-m", "pytest", str(TESTS / "recovery"), "-q", "--tb=short"],
-        capture_output=True, text=True, cwd=str(ROOT), env=env, timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=str(ROOT),
+        env=env,
+        timeout=60,
     )
     if r.returncode != 0:
         return False, f"recovery tests failed (exit {r.returncode})"
@@ -206,6 +237,7 @@ def gate_recovery_drills():
 
 
 # ── Main ───────────────────────────────────────────────────────────────
+
 
 def main():
     emergency = "--emergency" in sys.argv
@@ -244,7 +276,9 @@ def main():
     if all_pass:
         decision = "RELEASE APPROVED"
         exit_code = 0
-    elif emergency and not any(r["gate"] in ("security_suite", "test_suite", "no_secrets") for r in blockers):
+    elif emergency and not any(
+        r["gate"] in ("security_suite", "test_suite", "no_secrets") for r in blockers
+    ):
         decision = "RELEASE APPROVED (emergency mode)"
         exit_code = 0
         warnings.append("emergency mode: reduced validation")
@@ -258,8 +292,10 @@ def main():
     print(f"DECISION: {decision}")
     if warnings:
         print(f"WARNINGS: {'; '.join(warnings)}")
-    print(f"GATES: {len(results)} run, {sum(1 for r in results if r['status'] == 'PASS')} passed, "
-          f"{len(blockers)} blocked, {len(errors)} errors")
+    print(
+        f"GATES: {len(results)} run, {sum(1 for r in results if r['status'] == 'PASS')} passed, "
+        f"{len(blockers)} blocked, {len(errors)} errors"
+    )
 
     report = {
         "version": "0.9.0",

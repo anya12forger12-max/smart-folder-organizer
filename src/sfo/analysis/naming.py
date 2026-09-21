@@ -12,13 +12,23 @@ import re
 
 _SPLIT = re.compile(r"[\s_\-.,()\[\]]+")
 _VERSION_NOISE = {
-    "v1", "v2", "v3", "v4", "v5", "final", "final2", "finaldraft",
-    "copy", "copy2", "old", "new", "backup", "draft",
+    "v1",
+    "v2",
+    "v3",
+    "v4",
+    "v5",
+    "final",
+    "final2",
+    "finaldraft",
+    "copy",
+    "copy2",
+    "old",
+    "new",
+    "backup",
+    "draft",
 }
 _ARTIFACT = re.compile(r"\(\d+\)$")
-_STOPWORDS = frozenset(
-    {"the", "and", "for", "with", "notes", "doc", "document", "file"}
-)
+_STOPWORDS = frozenset({"the", "and", "for", "with", "notes", "doc", "document", "file"})
 
 
 def normalize_stem(name: str) -> str:
@@ -55,8 +65,7 @@ def shared_prefix_term(names: list[str]) -> str | None:
         head = tokens[0]
         candidates[head] = candidates.get(head, 0) + 1
     qualifying = [
-        (count, term) for term, count in candidates.items()
-        if count >= 2 and len(term) >= 3
+        (count, term) for term, count in candidates.items() if count >= 2 and len(term) >= 3
     ]
     if not qualifying:
         return None

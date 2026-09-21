@@ -83,9 +83,7 @@ class UndoService:
             raise JournalError("journal does not record an organization root")
 
         undo_op_id = f"{new_operation_id()}-undo"
-        txn_id = db.record_transaction(
-            kind="UNDO", root=root, external_id=undo_op_id
-        )
+        txn_id = db.record_transaction(kind="UNDO", root=root, external_id=undo_op_id)
         db.set_transaction_status(txn_id, "EXECUTING")
 
         reverse = build_reverse_plan(journal_path, root, self._fs)

@@ -28,8 +28,7 @@ def snapshot_fingerprint(records: list[FileRecord]) -> str:
         mtime = getattr(stat, "st_mtime_ns", 0) if stat else 0
         inode = getattr(stat, "st_ino", 0) if stat else 0
         lines.append(
-            f"{record.relative_path}\x1f{record.file_type.value}"
-            f"\x1f{size}\x1f{mtime}\x1f{inode}"
+            f"{record.relative_path}\x1f{record.file_type.value}\x1f{size}\x1f{mtime}\x1f{inode}"
         )
     payload = "\x1e".join(lines).encode("utf-8", errors="surrogateescape")
     return hashlib.sha256(payload).hexdigest()

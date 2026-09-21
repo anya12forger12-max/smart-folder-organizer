@@ -56,8 +56,13 @@ def _plan(root: Path, pairs) -> OrganizationPlan:
     return OrganizationPlan(
         root=root,
         statistics=PlanStatistics(
-            total_files=len(moves), moves=len(moves), unchanged=0,
-            skipped=0, conflicts=0, protected=0, uncertain=0,
+            total_files=len(moves),
+            moves=len(moves),
+            unchanged=0,
+            skipped=0,
+            conflicts=0,
+            protected=0,
+            uncertain=0,
             directories_created=0,
         ),
         actions=tuple(moves),

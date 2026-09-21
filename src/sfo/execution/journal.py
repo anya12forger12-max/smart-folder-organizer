@@ -131,9 +131,7 @@ class TransactionJournal:
         ambiguous = {JournalState.STARTED, JournalState.FAILED}
         recovery = any(s in ambiguous for s in self._states.values())
         if not recovery and self._header_written:
-            recovery = not any(
-                e.get("kind") == "SUMMARY" for e in self._read_entries()
-            )
+            recovery = not any(e.get("kind") == "SUMMARY" for e in self._read_entries())
         return recovery
 
     # -- io --------------------------------------------------------------

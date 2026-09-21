@@ -18,9 +18,24 @@ from sfo.rules.models import (
 from sfo.rules.priorities import MAX_PRIORITY, MIN_PRIORITY
 
 _DANGEROUS_SUBSTRINGS = (
-    ";", "&", "|", "$(", "${", "`", "\n", "\r", "\x00",
-    "eval(", "exec(", "__import__", "system(", "popen(", "subprocess",
-    "../", "..\\", "~/",
+    ";",
+    "&",
+    "|",
+    "$(",
+    "${",
+    "`",
+    "\n",
+    "\r",
+    "\x00",
+    "eval(",
+    "exec(",
+    "__import__",
+    "system(",
+    "popen(",
+    "subprocess",
+    "../",
+    "..\\",
+    "~/",
 )
 _MAX_COMPONENT_LEN = 64
 _MAX_DEPTH = 6

@@ -44,9 +44,7 @@ class SafetyPolicy:
 
     def assert_forbidden(self, operation: str) -> None:
         if operation in FORBIDDEN_OPERATIONS:
-            raise PermissionError(
-                f"operation '{operation}' is permanently forbidden in SFO"
-            )
+            raise PermissionError(f"operation '{operation}' is permanently forbidden in SFO")
 
     def to_lines(self) -> list[str]:
         labels = {

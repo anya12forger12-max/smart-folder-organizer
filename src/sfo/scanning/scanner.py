@@ -77,9 +77,7 @@ class Scanner:
                 if self._progress:
                     self._progress(seen)
                 if not is_within(root, entry):
-                    errors.append(
-                        ScanError(entry, "entry escaped root during listing; skipped")
-                    )
+                    errors.append(ScanError(entry, "entry escaped root during listing; skipped"))
                     continue
                 if self._rules.is_ignored(root, entry):
                     ignored_items.append(self._basic_record(root, entry, ignored=True))
@@ -106,9 +104,7 @@ class Scanner:
                         stats.directories += 1
                         stack.append(entry)
                     case FileType.SYMLINK:
-                        symlinks.append(
-                            self._symlink_record(root, entry, rel, info, protected)
-                        )
+                        symlinks.append(self._symlink_record(root, entry, rel, info, protected))
                         stats.symlinks += 1
                     case FileType.REGULAR_FILE:
                         record = self._file_record(root, entry, rel, info, protected, errors, stats)
@@ -172,9 +168,7 @@ class Scanner:
             skip_reason=SkipReason.IGNORED_DIRECTORY if ignored else None,
         )
 
-    def _record(
-        self, root: Path, path: Path, rel: Path, info, *, protected: bool
-    ) -> FileRecord:
+    def _record(self, root: Path, path: Path, rel: Path, info, *, protected: bool) -> FileRecord:
         from sfo.domain.identity import FileIdentity
 
         identity = None
@@ -197,7 +191,9 @@ class Scanner:
             protected=protected,
         )
 
-    def _symlink_record(self, root: Path, path: Path, rel: Path, info, protected: bool) -> FileRecord:
+    def _symlink_record(
+        self, root: Path, path: Path, rel: Path, info, protected: bool
+    ) -> FileRecord:
         target = info.symlink_target or ""
         resolved = (path.parent / target).resolve(strict=False)
         outside = not is_within(root, resolved)
@@ -217,9 +213,7 @@ class Scanner:
             identity=None,
             protected=protected,
             skip_reason=(
-                SkipReason.SYMLINK_OUTSIDE_ROOT
-                if outside
-                else SkipReason.SYMLINK_NOT_FOLLOWED
+                SkipReason.SYMLINK_OUTSIDE_ROOT if outside else SkipReason.SYMLINK_NOT_FOLLOWED
             ),
         )
 

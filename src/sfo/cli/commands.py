@@ -233,8 +233,9 @@ def cmd_rules(args, style: Style) -> int:  # noqa: ANN001
             print(
                 f"  {rule.id}  {safe_text(rule.name)}\n"
                 f"      when {' AND '.join(describe(c) for c in rule.conditions)}\n"
-                f"      then {rule.action.value}" + (f" {dest}" if rule.destination else "") +
-                f"\n      priority {rule.priority}  [{flag}]"
+                f"      then {rule.action.value}"
+                + (f" {dest}" if rule.destination else "")
+                + f"\n      priority {rule.priority}  [{flag}]"
             )
         return SUCCESS
 
@@ -317,7 +318,9 @@ def _rules_test(folder_raw: str, style: Style) -> int:  # noqa: ANN001
         if shown < 20:
             shown += 1
             dest = rule.destination or rule.action.value.lower()
-            print(f"{safe_text(context.relative_path_posix)}\n  matched {rule.id}: {matched}\n  would go to: {dest}")
+            print(
+                f"{safe_text(context.relative_path_posix)}\n  matched {rule.id}: {matched}\n  would go to: {dest}"
+            )
     print(f"\n{matched_count} file(s) would be affected by rules. Nothing was changed.")
     return SUCCESS
 
@@ -345,7 +348,12 @@ def cmd_status(args, style: Style) -> int:  # noqa: ANN001
 def cmd_diagnostics(args, style: Style) -> int:  # noqa: ANN001
     paths = AppPaths.default().ensure()
     if args.clear:
-        if input("Delete SFO's local history and journals? This cannot be undone. Type 'yes': ").strip() != "yes":
+        if (
+            input(
+                "Delete SFO's local history and journals? This cannot be undone. Type 'yes': "
+            ).strip()
+            != "yes"
+        ):
             print("Cancelled.")
             return SUCCESS
         if paths.journal_dir.is_dir():
@@ -472,8 +480,10 @@ def cmd_inspect(args, style: Style) -> int:  # noqa: ANN001
     print(f"\nLOCATION\n  absolute: {report.absolute_path}")
     print(f"  parent:   {report.parent}")
     if report.size_bytes is not None:
-        print(f"\nSIZE\n  {_human_bytes(report.size_bytes)}"
-              + (f"  ({report.size_bytes} bytes)" if args.verbose else ""))
+        print(
+            f"\nSIZE\n  {_human_bytes(report.size_bytes)}"
+            + (f"  ({report.size_bytes} bytes)" if args.verbose else "")
+        )
     stamps = [t for t in (report.modified, report.created, report.accessed) if t]
     if stamps:
         print("\nTIMESTAMPS")
@@ -484,8 +494,10 @@ def cmd_inspect(args, style: Style) -> int:  # noqa: ANN001
         ):
             print(f"  {label:>9}: {value or 'unavailable'}")
     if report.permissions:
-        print(f"\nPERMISSIONS\n  {report.permissions}"
-              + (f"  owner: {report.owner}" if report.owner else ""))
+        print(
+            f"\nPERMISSIONS\n  {report.permissions}"
+            + (f"  owner: {report.owner}" if report.owner else "")
+        )
     print("\nTYPE")
     declared = report.extension_label or "unknown"
     detected = report.detected_label or "unavailable"
@@ -494,8 +506,10 @@ def cmd_inspect(args, style: Style) -> int:  # noqa: ANN001
     if report.type_mismatch:
         print("  ! Extension and detected type may not match. SFO will not rename anything.")
 
-    print(f"\nPROTECTION\n  {report.protection}"
-          + (f"  ({report.protection_reason})" if report.protection_reason else ""))
+    print(
+        f"\nPROTECTION\n  {report.protection}"
+        + (f"  ({report.protection_reason})" if report.protection_reason else "")
+    )
 
     if report.project_name:
         print(f"\nPROJECT\n  {report.project_name}  [{report.project_confidence}]")
@@ -521,7 +535,9 @@ def cmd_inspect(args, style: Style) -> int:  # noqa: ANN001
 
     if report.symlink_target is not None:
         exists = "exists" if report.symlink_target_exists else "BROKEN"
-        external = "EXTERNAL TARGET - not followed" if report.symlink_external else "inside its folder"
+        external = (
+            "EXTERNAL TARGET - not followed" if report.symlink_external else "inside its folder"
+        )
         print(f"\nSYMLINK\n  target: {report.symlink_target}  ({exists}, {external})")
 
     if report.directory_stats is not None:
@@ -602,8 +618,10 @@ def cmd_duplicates(args, style: Style) -> int:  # noqa: ANN001
     print(f"Potentially reclaimable space: {_human_bytes(report.potentially_reclaimable)}")
 
     for group in report.groups[:20]:
-        tags = "CONFIRMED DUPLICATE" if group.kind == "CONFIRMED" else (
-            "EMPTY FILES" if group.kind == "EMPTY" else "SAME FILE (hard links)"
+        tags = (
+            "CONFIRMED DUPLICATE"
+            if group.kind == "CONFIRMED"
+            else ("EMPTY FILES" if group.kind == "EMPTY" else "SAME FILE (hard links)")
         )
         extra = f", {_human_bytes(group.size)} each" if group.size else ""
         print(f"\n{group.group_id}  {tags}  {len(group.files)} files{extra}")
@@ -644,7 +662,7 @@ def cmd_doctor(args, style: Style) -> int:  # noqa: ANN001
     paths = AppPaths.default().ensure()
     checks: list[tuple[bool, str]] = []
     for name in ("settings", "rules"):
-        location = dict(config_locations(paths))[ {"settings": "settings", "rules": "rules"}[name] ]
+        location = dict(config_locations(paths))[{"settings": "settings", "rules": "rules"}[name]]
         checks.append((location.parent.is_dir(), f"{name} directory exists"))
     try:
         Database(paths.database_path).list_transactions(limit=1)
@@ -673,7 +691,9 @@ def cmd_doctor(args, style: Style) -> int:  # noqa: ANN001
 
     crashes = recent_crashes(paths.data_dir)
     if crashes:
-        checks.append((True, f"{len(crashes)} diagnostic crash record(s) in {paths.data_dir / 'crashes'}"))
+        checks.append(
+            (True, f"{len(crashes)} diagnostic crash record(s) in {paths.data_dir / 'crashes'}")
+        )
     ok = all(passed for passed, _ in checks)
     for passed, message in checks:
         marker = "[ok]" if passed else "[!!]"
@@ -714,8 +734,10 @@ def _render_preview(artifacts, style: Style, details: bool = False) -> None:  # 
         print(style.bold("Projects"))
         for group in projects:
             organized = "(already organized)" if group.directory is not None else "(keep together)"
-            print(f"  {safe_text(group.name)}  {len(group.members)} files  "
-                  f"{confidence_label(group.confidence.name)}  {organized}")
+            print(
+                f"  {safe_text(group.name)}  {len(group.members)} files  "
+                f"{confidence_label(group.confidence.name)}  {organized}"
+            )
         print()
 
     topics = analysis.topics
@@ -733,7 +755,9 @@ def _render_preview(artifacts, style: Style, details: bool = False) -> None:  # 
     print(f"  Conflicts:           {stats.conflicts}")
     print(f"  Protected:           {stats.protected}")
     print(f"  Skipped:             {stats.skipped}")
-    print(f"  Directories created: {plan.directory_creations and len(plan.directory_creations) or 0}")
+    print(
+        f"  Directories created: {plan.directory_creations and len(plan.directory_creations) or 0}"
+    )
     for warning in plan.warnings:
         print(style.yellow(f"  note: {safe_text(warning)}"))
     print()
@@ -764,8 +788,12 @@ def _render_preview(artifacts, style: Style, details: bool = False) -> None:  # 
             for action in moves[:60]:
                 arrow = f"{rel_display(plan.root, action.source)} -> {rel_display(plan.root, action.destination)}"
                 print(f"  {safe_text(arrow)}")
-                print(style.dim(f"    {action.reason_code}: {safe_text(action.reason)} "
-                                f"[{confidence_label(action.confidence.name)}]"))
+                print(
+                    style.dim(
+                        f"    {action.reason_code}: {safe_text(action.reason)} "
+                        f"[{confidence_label(action.confidence.name)}]"
+                    )
+                )
             if len(moves) > 60:
                 print(f"  … and {len(moves) - 60} more (use --json for full output)")
         keeps = plan.keeps

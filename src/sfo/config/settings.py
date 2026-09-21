@@ -32,8 +32,12 @@ class UserConfig:
             raw = json.loads(file.read_text(encoding="utf-8"))
             cfg = cls(
                 default_root=Path(raw["default_root"]) if raw.get("default_root") else None,
-                protected=[PathRule(Path(p["path"]), p.get("reason")) for p in raw.get("protected", [])],
-                ignored=[PathRule(Path(p["path"]), p.get("reason")) for p in raw.get("ignored", [])],
+                protected=[
+                    PathRule(Path(p["path"]), p.get("reason")) for p in raw.get("protected", [])
+                ],
+                ignored=[
+                    PathRule(Path(p["path"]), p.get("reason")) for p in raw.get("ignored", [])
+                ],
             )
         except (json.JSONDecodeError, KeyError, TypeError) as exc:
             raise ConfigError(f"invalid settings file {file}: {exc}") from exc

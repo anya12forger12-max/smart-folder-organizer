@@ -88,9 +88,7 @@ def assess_operation(journal_path: Path, fs: FileSystem) -> OperationAssessment 
             state = JournalState(entry.get("state", "FAILED"))
         except ValueError:
             state = JournalState.FAILED
-        assessments.append(
-            _classify(aid, source, destination, state, fs)
-        )
+        assessments.append(_classify(aid, source, destination, state, fs))
     return OperationAssessment(
         operation_id=journal_path.stem, root=root, actions=tuple(assessments)
     )
@@ -108,23 +106,39 @@ def _classify(
 
     if src_exists and dst_exists:
         return ActionAssessment(
-            action_id, source, destination, state, RecoveryClass.NEEDS_REVIEW,
+            action_id,
+            source,
+            destination,
+            state,
+            RecoveryClass.NEEDS_REVIEW,
             "source and destination both exist; nothing will be removed or "
             "overwritten - manual review required",
         )
     if not src_exists and not dst_exists:
         return ActionAssessment(
-            action_id, source, destination, state, RecoveryClass.UNKNOWN,
+            action_id,
+            source,
+            destination,
+            state,
+            RecoveryClass.UNKNOWN,
             "neither path exists; state cannot be safely determined",
         )
     if dst_exists and not src_exists:
         return ActionAssessment(
-            action_id, source, destination, state, RecoveryClass.SAFE_TO_COMPLETE,
+            action_id,
+            source,
+            destination,
+            state,
+            RecoveryClass.SAFE_TO_COMPLETE,
             "move appears committed at the destination",
         )
     # source only
     return ActionAssessment(
-        action_id, source, destination, state, RecoveryClass.SAFE_TO_COMPLETE,
+        action_id,
+        source,
+        destination,
+        state,
+        RecoveryClass.SAFE_TO_COMPLETE,
         "move never started or was rolled back safely",
     )
 

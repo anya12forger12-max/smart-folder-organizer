@@ -191,8 +191,12 @@ def test_cli_json_output_is_valid_and_read_only(tmp_path: Path):
     before = sorted(str(p) for p in tmp_path.rglob("*"))
     result = subprocess.run(
         [
-            sys.executable, "-m", "sfo.cli.app", "duplicates",
-            str(tmp_path), "--json",
+            sys.executable,
+            "-m",
+            "sfo.cli.app",
+            "duplicates",
+            str(tmp_path),
+            "--json",
         ],
         capture_output=True,
         text=True,
@@ -212,7 +216,10 @@ def test_cli_json_output_is_valid_and_read_only(tmp_path: Path):
 def test_cli_missing_folder_exit_code(tmp_path: Path):
     result = subprocess.run(
         [
-            sys.executable, "-m", "sfo.cli.app", "duplicates",
+            sys.executable,
+            "-m",
+            "sfo.cli.app",
+            "duplicates",
             str(tmp_path / "missing"),
         ],
         capture_output=True,

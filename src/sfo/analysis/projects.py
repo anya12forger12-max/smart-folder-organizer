@@ -85,16 +85,11 @@ def detect_projects(scan: ScanResult) -> tuple[ProjectGroup, ...]:
     loose = [
         f
         for f in scan.files
-        if f.is_scannable
-        and len(f.relative_path.parts) == 1
-        and f.absolute_path not in claimed
+        if f.is_scannable and len(f.relative_path.parts) == 1 and f.absolute_path not in claimed
     ]
     prefix = shared_prefix_term([f.name for f in loose])
     if prefix is not None:
-        cluster = [
-            f for f in loose
-            if _first_token(f.name) == prefix
-        ]
+        cluster = [f for f in loose if _first_token(f.name) == prefix]
         if len(cluster) >= MIN_CLUSTER_FILES:
             members = tuple(sorted(f.absolute_path for f in cluster))
             groups.append(
@@ -108,8 +103,7 @@ def detect_projects(scan: ScanResult) -> tuple[ProjectGroup, ...]:
                         Evidence(
                             EvidenceKind.NAMING_PATTERN,
                             Confidence.MEDIUM,
-                            f"{len(members)} files share the leading term "
-                            f"'{prefix}'",
+                            f"{len(members)} files share the leading term '{prefix}'",
                         ),
                     ),
                 )

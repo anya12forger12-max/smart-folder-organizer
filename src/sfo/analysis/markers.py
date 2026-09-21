@@ -51,8 +51,16 @@ SENSITIVE_PATTERNS = ("*.pem", "*.key", "*.p12", "*.pfx", "*.kdbx", "*password*"
 
 # Temporary/partial files: recognized but left untouched by default.
 TEMPORARY_PATTERNS = (
-    "*.tmp", "*.swp", "*.swo", "*.part", "*.partial", "*.crdownload",
-    "~$", "*.bak", "*.orig", "*.temp",
+    "*.tmp",
+    "*.swp",
+    "*.swo",
+    "*.part",
+    "*.partial",
+    "*.crdownload",
+    "~$",
+    "*.bak",
+    "*.orig",
+    "*.temp",
 )
 
 
@@ -104,13 +112,41 @@ class FileRole(str, Enum):
 
 _DOC_PATTERNS = ("readme*", "*.md", "*.rst", "*.txt", "changelog*", "license*", "docs/*")
 _SOURCE_EXTS = {
-    ".py", ".js", ".ts", ".jsx", ".tsx", ".go", ".rs", ".java", ".c", ".cc",
-    ".cpp", ".h", ".hpp", ".cs", ".rb", ".php", ".swift", ".kt", ".dart", ".sh",
+    ".py",
+    ".js",
+    ".ts",
+    ".jsx",
+    ".tsx",
+    ".go",
+    ".rs",
+    ".java",
+    ".c",
+    ".cc",
+    ".cpp",
+    ".h",
+    ".hpp",
+    ".cs",
+    ".rb",
+    ".php",
+    ".swift",
+    ".kt",
+    ".dart",
+    ".sh",
 }
 _TEST_HINTS = ("test", "spec")
 _CONFIG_NAMES = frozenset(
-    {"package.json", "pyproject.toml", "setup.cfg", "cargo.toml", "go.mod",
-     "makefile", "dockerfile", ".gitignore", "tsconfig.json", "requirements.txt"}
+    {
+        "package.json",
+        "pyproject.toml",
+        "setup.cfg",
+        "cargo.toml",
+        "go.mod",
+        "makefile",
+        "dockerfile",
+        ".gitignore",
+        "tsconfig.json",
+        "requirements.txt",
+    }
 )
 
 

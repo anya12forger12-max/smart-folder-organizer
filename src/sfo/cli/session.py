@@ -90,9 +90,7 @@ class Session:
         posix = resolved.as_posix()
         for forbidden in FORBIDDEN_ROOTS:
             if posix == forbidden or posix.startswith(forbidden + "/") and forbidden != "/root":
-                if posix == forbidden or (
-                    forbidden != "/" and posix.startswith(forbidden + "/")
-                ):
+                if posix == forbidden or (forbidden != "/" and posix.startswith(forbidden + "/")):
                     raise SecurityError(
                         f"refusing to organize protected system location: {forbidden}"
                     )

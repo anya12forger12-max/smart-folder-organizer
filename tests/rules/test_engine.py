@@ -17,9 +17,15 @@ from sfo.rules.models import (
 )
 
 
-def _rule(rule_id, priority, value="physics", destination="School/Physics",
-          enabled=True, field=RuleField.FILENAME,
-          operator=RuleOperator.CONTAINS):
+def _rule(
+    rule_id,
+    priority,
+    value="physics",
+    destination="School/Physics",
+    enabled=True,
+    field=RuleField.FILENAME,
+    operator=RuleOperator.CONTAINS,
+):
     return OrganizationRule(
         id=rule_id,
         name=f"rule {rule_id}",
@@ -103,9 +109,14 @@ def test_different_priorities_do_not_conflict():
 
 
 def test_extension_operator_matches_case_insensitively():
-    rule = _rule("R-PDF", 30, value=".pdf",
-                 operator=RuleOperator.EQUALS, field=RuleField.EXTENSION,
-                 destination="Documents")
+    rule = _rule(
+        "R-PDF",
+        30,
+        value=".pdf",
+        operator=RuleOperator.EQUALS,
+        field=RuleField.EXTENSION,
+        destination="Documents",
+    )
     decision = first_matching_rule([rule], _context(filename="Report.PDF"))
     assert decision is not None
     assert decision[0].destination == "Documents"

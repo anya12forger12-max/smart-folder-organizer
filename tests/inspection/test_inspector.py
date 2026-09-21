@@ -25,8 +25,9 @@ def fs() -> LinuxFileSystem:
     return LinuxFileSystem()
 
 
-def _deps(fs, tmp_path: Path, rules: RuleSet | None = None,
-          org_rules: list | None = None) -> InspectionDeps:
+def _deps(
+    fs, tmp_path: Path, rules: RuleSet | None = None, org_rules: list | None = None
+) -> InspectionDeps:
     return InspectionDeps(
         fs=fs,
         ruleset=rules or RuleSet.EMPTY,
@@ -42,8 +43,7 @@ def _physics_rule() -> OrganizationRule:
         priority=50,
         action=RuleAction.PREFER_DIRECTORY,
         conditions=(
-            Condition(field=RuleField.FILENAME, operator=RuleOperator.CONTAINS,
-                      value="physics"),
+            Condition(field=RuleField.FILENAME, operator=RuleOperator.CONTAINS, value="physics"),
         ),
         destination="School/Physics",
     )
@@ -82,9 +82,7 @@ def test_real_pdf_not_flagged(fs, tmp_path: Path):
 def test_rule_classification_shown_with_reason(fs, tmp_path: Path):
     target = tmp_path / "physics_notes.pdf"
     target.write_bytes(b"%PDF-1.7 physics")
-    report = inspect_path(
-        target, _deps(fs, tmp_path, org_rules=[_physics_rule()])
-    )
+    report = inspect_path(target, _deps(fs, tmp_path, org_rules=[_physics_rule()]))
     assert report.rule_id == "R-014"
     assert report.rule_destination == "School/Physics"
     assert report.rule_match  # explainable matched condition
@@ -193,12 +191,10 @@ def test_unreadable_file_inspected_without_privilege_escalation(fs, tmp_path: Pa
     target.write_text("hidden")
     os.chmod(target, 0o000)
     try:
-        report = inspect_path(
-            target, _deps(fs, tmp_path), want_hash=True, want_preview=True
-        )
+        report = inspect_path(target, _deps(fs, tmp_path), want_hash=True, want_preview=True)
         assert report.state == "CURRENT"  # metadata still visible via stat
-        assert report.hash_hex is None    # content refused, no escalation
-        assert report.preview_note        # explained instead of crashing
+        assert report.hash_hex is None  # content refused, no escalation
+        assert report.preview_note  # explained instead of crashing
     finally:
         os.chmod(target, 0o644)
 
@@ -209,8 +205,11 @@ def test_inspection_is_strictly_read_only(fs, tmp_path: Path):
     (tmp_path / "b.txt").write_bytes(b"payload" * 32)
     before = sorted((str(p), p.stat().st_mtime_ns) for p in tmp_path.rglob("*"))
     inspect_path(
-        target, _deps(fs, tmp_path),
-        want_hash=True, want_preview=True, want_duplicates=True,
+        target,
+        _deps(fs, tmp_path),
+        want_hash=True,
+        want_preview=True,
+        want_duplicates=True,
     )
     after = sorted((str(p), p.stat().st_mtime_ns) for p in tmp_path.rglob("*"))
     assert before == after
@@ -233,7 +232,8 @@ def _run_cli(argv: list[str]):
     repo = Path(__file__).resolve().parents[2]
     return subprocess.run(
         [sys.executable, "-m", "sfo.cli.app", *argv],
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
         env={**os.environ, "PYTHONPATH": str(repo / "src")},
         cwd=repo,
     )
